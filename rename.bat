@@ -47,18 +47,17 @@ ECHO 修改ing...
 ECHO.
 SET /a index=0
 FOR /r %filePath% %%i in (*.!suffix!) do (
-    SET /a index=!index!+1
-    ECHO 替换第!index!个文件%%i开始
     SET fileName=%%~ni
-    SET fileSuffix=%%~xi
-    SET fileName=!fileName:%oldStr%=%newStr%!!fileSuffix!
-    REN %%i !fileName!
-    ECHO 替换第!index!个文件结束%%i被替换为!fileName!
-)
-IF %ERRORlEVEL% equ 0 (
-    ECHO 修改成功!
-) ELSE (
-    ECHO 修改失败!
+    echo !fileName!|findstr !oldStr!>nul 2>nul&&(
+        SET /a index=!index!+1
+        ECHO 替换第!index!个文件名%%i开始.
+        SET fileSuffix=%%~xi
+        SET fileName=!fileName:%oldStr%=%newStr%!!fileSuffix!
+        REN %%i !fileName!
+        ECHO 替换第!index!个文件%%i被替换为!fileName!结束.
+    )||(
+        echo !fileName!不包含!oldStr!，文件名不被修改
+    )    
 )
 ECHO.
 PAUSE
