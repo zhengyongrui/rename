@@ -10,6 +10,18 @@ ECHO.
 :START
 SET /P filePath="请输入你要替换的源路径文件名(需要在批处理同目录下): "
 ECHO.
+CHOICE /C yn /m "是否要复制到新的文件夹: "
+IF %ERRORlEVEL% equ 1 SET createDir=1
+IF %ERRORlEVEL% equ 0 SET createDir=0
+ECHO.
+IF !createDir! equ 1 (
+    SET /P newFilePath="请输入新文件夹名称: "
+    if defined newFilePath (
+        xcopy !filePath! !newFilePath! /e /y /i
+        set filePath=!newFilePath!
+    )
+)
+ECHO.
 ECHO 请选择要批量修改的处理的后缀名：
 ECHO.
 ECHO 1. 所有文件(只会修改文件名)
@@ -24,8 +36,8 @@ IF %ERRORlEVEL% equ 2 SET suffix=java
 IF %ERRORlEVEL% equ 3 SET suffix=txt
 IF %ERRORlEVEL% equ 4 SET suffix=png
 IF %ERRORlEVEL% equ 5 (
-ECHO.
-SET /P suffix="请输入要批量处理的后缀名: "
+    ECHO.
+    SET /P suffix="请输入要批量处理的后缀名: "
 )
 ECHO.
 SET /P oldStr="请输入你要被替换的文字: "
