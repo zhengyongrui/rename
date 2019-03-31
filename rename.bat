@@ -12,7 +12,7 @@ SET /P filePath="请输入你要替换的源路径文件名(需要在批处理同目录下): "
 ECHO.
 CHOICE /C yn /m "是否要复制到新的文件夹: "
 IF %ERRORlEVEL% equ 1 SET createDir=1
-IF %ERRORlEVEL% equ 0 SET createDir=0
+IF %ERRORlEVEL% equ 2 SET createDir=0
 ECHO.
 IF !createDir! equ 1 (
     SET /P newFilePath="请输入新文件夹名称: "
@@ -57,7 +57,7 @@ FOR /r %filePath% %%i in (*.!suffix!) do (
         ECHO 替换第!index!个文件%%i被替换为!fileName!结束.
     )||(
         echo !fileName!不包含!oldStr!，文件名不被修改
-    )    
+    )
 )
 ECHO.
 PAUSE
