@@ -1,26 +1,14 @@
 @ECHO OFF
 SETLOCAL ENABLEDELAYEDEXPANSION
 COLOR 0A
-TITLE zyr batch rename tool
+TITLE zyr batch ReplaceContent tool
 ECHO.
 ECHO =================================
-ECHO     欢迎使用zyr批量命名工具
+ECHO     欢迎使用zyr批量替换文件内容工具
 ECHO =================================
 ECHO.
 :START
 SET /P filePath="请输入你要替换的源路径文件名(需要在批处理同目录下): "
-ECHO.
-CHOICE /C yn /m "是否要复制到新的文件夹: "
-IF %ERRORlEVEL% equ 1 SET createDir=1
-IF %ERRORlEVEL% equ 2 SET createDir=0
-ECHO.
-IF !createDir! equ 1 (
-    SET /P newFilePath="请输入新文件夹名称: "
-    if defined newFilePath (
-        xcopy !filePath! !newFilePath! /e /y /i
-        set filePath=!newFilePath!
-    )
-)
 ECHO.
 ECHO 请选择要批量修改的处理的后缀名：
 ECHO.
@@ -44,20 +32,19 @@ SET /P oldStr="请输入你要被替换的文字: "
 SET /P newStr="请输入你要替换的文字: "
 ECHO.
 ECHO 修改ing...
-ECHO.
 SET /a index=0
 FOR /r %filePath% %%i in (*.!suffix!) do (
-    SET fileName=%%~ni
-    echo !fileName!|findstr !oldStr!>nul 2>nul&&(
-        SET /a index=!index!+1
-        ECHO 替换第!index!个文件名%%i开始.
-        SET fileSuffix=%%~xi
-        SET fileName=!fileName:%oldStr%=%newStr%!!fileSuffix!
-        REN %%i !fileName!
-        ECHO 替换第!index!个文件%%i被替换为!fileName!结束.
-    )||(
-        echo !fileName!不包含!oldStr!，文件名不被修改
-    )
+    SET fileFullName=%%i
+    (for /f "tokens=1* delims=:" %%a in ('findstr /n ".*" !fileFullName!') do (
+        SET str=%%b
+        IF "!str!" neq "" (
+            ECHO !str!|findstr !oldStr!>nul 2>nul&&(
+                SET str=!str:%oldStr%=%newStr%!
+            )
+        )
+        echo,!str!
+    ))>!fileFullName!.tmp
+    move !fileFullName!.tmp !fileFullName!>nul 2>nul
 )
 ECHO.
 PAUSE
